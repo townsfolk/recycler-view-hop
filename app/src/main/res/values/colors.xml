@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="action_bar_bg" type="color">#ff4958</item>
+    <item name="coins_tx" type="color">#FFD900</item>
+    <item name="stages_dark_grey" type="color">#FFA4A4A4</item>
+    <item name="stages_light_grey" type="color">#FFEFEFEF</item>
+</resources>
