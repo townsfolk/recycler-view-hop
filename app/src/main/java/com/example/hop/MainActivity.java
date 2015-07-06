@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.example.hop.model.GameManager;
@@ -14,6 +17,8 @@ import com.example.hop.model.Stage;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final int QUESTION = 0;
     public static final int CHECKPOINT = 1;
@@ -35,10 +40,41 @@ public class MainActivity extends ActionBarActivity {
         mStagesView = (RecyclerView) findViewById(R.id.game_stages_view);
         mStagesView.setLayoutManager(mStagesLayout);
         mStagesView.setAdapter(mStagesAdapter);
+        mStagesView.getItemAnimator().setSupportsChangeAnimations(true);
     }
 
     public void doNextButton(View view) {
-        gameManager.doPassCurrentStage();
+        final Stage currentStage = gameManager.currentStage;
+        final Stage nextStage = gameManager.doPassCurrentStage();
+        //stagesAdapter.notifyDataSetChanged()
+        Log.d(TAG, "Notifying item change: ${currentStage.stageIndex}");
+        mStagesAdapter.notifyItemChanged(currentStage.stageIndex);
+        //stagesView.smoothScrollToPosition(nextStage.stageIndex)
+
+
+        View stageView = mStagesLayout.findViewByPosition(currentStage.stageIndex);
+        if (stageView != null) {
+            Log.d(TAG, "Animating passed stage: " + currentStage.stageIndex);
+
+            /* Use animate
+            stageView.animate()
+                    .translationYBy(-100)
+                    .setInterpolator(new CycleInterpolator(0.5f))
+                    .setDuration(500)
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            //stagesView.smoothScrollToPosition(nextStage.stageIndex)
+                        }
+                    }).start();
+            /* */
+
+            /* Use Animation */
+            Animation moveAnimation = AnimationUtils.loadAnimation(this, R.anim.game_stage_complete);
+            stageView.startAnimation(moveAnimation);
+            /* */
+
+        }
     }
 
     private class StagesViewAdapter extends RecyclerView.Adapter<StagesViewAdapter.ViewHolder> {
